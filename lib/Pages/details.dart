@@ -3,30 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:carousel_slider/carousel_slider.dart';
 
-const List villes = [
-{
-"ville":"Paris, France",
-"temperature":"20",
-"maxTemp":"25",
-"minTemp":"16",
-"pluie":"10",
-"humidite":"10",
-"vent":"NE 40",
-"ressenti":"20",
-"meteo":"pluvieux",
-"image":"rain.svg",
-
-}];
-
-const List jour = [
-  {
-    "date":"mardi",
-    "temp max":"27",
-    "temp min":"12",
-    "meteo":"cloud",
-  }
-];
-
 
 class details extends StatelessWidget {
   const details({Key? key}) : super(key: key);
