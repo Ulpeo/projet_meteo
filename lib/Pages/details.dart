@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:projet_meteo/api/localisation.dart';
+import 'package:projet_meteo/Pages/components.dart';
 
 import '../api/meteo.dart';
 
@@ -71,7 +71,7 @@ class _detailsState extends State<details> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-                    child: carteMeteo(meteo?.temperature, meteo?.min[0], meteo?.max[0]),
+                    child: carteMeteo(meteo?.temperature, meteo?.min[0], meteo?.max[0], meteo?.weathercode),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -97,11 +97,11 @@ class _detailsState extends State<details> {
                       ],
                     ),
                   ),
-                  parHeure(snapshot.data),
-                  parJour(getDayOfWeek(meteo?.time[1]),meteo?.min[1],meteo?.max[1]),
-                  parJour(getDayOfWeek(meteo?.time[2]),meteo?.min[2],meteo?.max[2]),
-                  parJour(getDayOfWeek(meteo?.time[3]),meteo?.min[3],meteo?.max[3]),
-                  parJour(getDayOfWeek(meteo?.time[4]),meteo?.min[4],meteo?.max[4]),
+                  parHeure(snapshot.data, meteo?.hourcode),
+                  parJour(getDayOfWeek(meteo?.time[1]),meteo?.min[1],meteo?.max[1], meteo?.daycode[1]),
+                  parJour(getDayOfWeek(meteo?.time[2]),meteo?.min[2],meteo?.max[2], meteo?.daycode[2]),
+                  parJour(getDayOfWeek(meteo?.time[3]),meteo?.min[3],meteo?.max[3], meteo?.daycode[3]),
+                  parJour(getDayOfWeek(meteo?.time[4]),meteo?.min[4],meteo?.max[4], meteo?.daycode[4]),
                   Text("Plus d'infos", style:
                   TextStyle(color:Colors.black.withOpacity(0.5), fontWeight: FontWeight.bold, fontSize: 30), textAlign: TextAlign.left,),
                   Row(
@@ -202,7 +202,7 @@ class _detailsState extends State<details> {
 
 
 
-Widget carteMeteo(temperature, min, max){
+Widget carteMeteo(temperature, min, max, weatherCode){
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(
@@ -228,7 +228,7 @@ Widget carteMeteo(temperature, min, max){
                 children: [
                   Column(
                     children: [
-                      Text("ensoleillé", style:
+                      Text(getMeteo(weatherCode), style:
                       TextStyle(fontSize: 20, color: Colors.grey),),
                       Text(temperature.toString(), style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 50,),),
@@ -237,11 +237,11 @@ Widget carteMeteo(temperature, min, max){
                   ),
                   SizedBox(
                       height:80, width: 80,
-                      child: SvgPicture.asset("cloud.svg",  colorFilter: ColorFilter.mode(Colors.deepPurple, BlendMode.srcIn))),
+                      child: SvgPicture.asset(getImage(getMeteo(weatherCode)),  colorFilter: ColorFilter.mode(Colors.deepPurple, BlendMode.srcIn))),
 
                 ],
               ),
-              Text("Aujourd’hui, le temps est ensoleillé. Il y aura une minimale de ${min}° et un maximum de ${max}°.",
+              Text("Aujourd’hui, le temps est ${getMeteo(weatherCode)}. Il y aura une minimale de ${min}° et un maximum de ${max}°.",
                   style:
                   TextStyle(fontSize: 20)),
             ],
@@ -251,7 +251,7 @@ Widget carteMeteo(temperature, min, max){
   );
 }
 
-Widget parHeure(meteo){
+Widget parHeure(meteo, weatherCode){
 
   return
     CarouselSlider(
@@ -273,7 +273,7 @@ Widget parHeure(meteo){
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: SvgPicture.asset("cloud.svg",  colorFilter: ColorFilter.mode(Colors.grey, BlendMode.srcIn)),
+                      child: SvgPicture.asset(getImage(getMeteo(weatherCode[i])),  colorFilter: ColorFilter.mode(Colors.grey, BlendMode.srcIn)),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -293,7 +293,7 @@ Widget parHeure(meteo){
 
 }
 
-Widget parJour(date, min, max){
+Widget parJour(date, min, max, weatherCode){
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Row(
@@ -305,7 +305,7 @@ Widget parJour(date, min, max){
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: SvgPicture.asset("cloud.svg",  colorFilter: ColorFilter.mode(Colors.black, BlendMode.srcIn)),
+              child: SvgPicture.asset(getImage(getMeteo(weatherCode)),  colorFilter: ColorFilter.mode(Colors.black, BlendMode.srcIn)),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),

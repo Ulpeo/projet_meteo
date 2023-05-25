@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Future<Meteo> fetchMeteo() async {
-  var lat = 23.2554;
-  var lng = -3.2545;
+  var lat = 47.6034323;
+  var lng = -3.0664113;
   final response = await http
       .get(Uri.parse('https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,precipitation_probability,weathercode,windspeed_10m,winddirection_80m&daily=temperature_2m_max,temperature_2m_min,weathercode&current_weather=true&timezone=auto'));
 
