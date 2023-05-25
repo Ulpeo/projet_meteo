@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:projet_meteo/Pages/MeteoPage.dart';
 import 'Pages/addCity.dart';
 import 'Pages/details.dart';
-import 'package:projet_meteo/Pages/posts.dart';
+
 
 
 void main() {
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
           '/': (context) => MeteoPage(),
           '/addCity': (context) => addCity(),
           '/details': (context) => details(),
-          '/api': (context) => HomePage(),
+
         },
         initialRoute: '/');
   }
