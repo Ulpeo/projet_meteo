@@ -1,14 +1,20 @@
 import "package:flutter/material.dart";
-
+import "package:projet_meteo/Pages/MeteoPage.dart";
 import "../api/localisation.dart";
+import "components.dart";
+
+
+//page pour ajouter la ville
 
 class addCity extends StatefulWidget {
+  final List<City> cityList; //liste de l'object de la classe City pour récupérer les infos dans toutes les pages
+  addCity ({required this.cityList});
   @override
   _addCityState createState() => _addCityState();
 }
 
 class _addCityState extends State<addCity> {
-  final albumBloc = LocaBloc();// Créez une instance de votre classe BLoC
+  final locaBloc = LocaBloc();//
   final _controller = TextEditingController();
 
 
@@ -16,12 +22,12 @@ class _addCityState extends State<addCity> {
   @override
   void initState() {
     super.initState();
-    albumBloc.fetchLoca2(_controller); // Appelez la méthode pour récupérer l'album lorsque votre page est initialisée
+    locaBloc.fetchLoca2(_controller);
   }
 
   @override
   void dispose() {
-    albumBloc.dispose(); // Disposez de votre classe BLoC lorsque la page est supprimée
+    locaBloc.dispose();
     super.dispose();
   }
 
@@ -30,9 +36,9 @@ class _addCityState extends State<addCity> {
     TextEditingController _controller = TextEditingController();
 
     void handleButtonPress() {
-      String userInput = _controller.text; // Récupérez la valeur saisie par l'utilisateur à partir du contrôleur de texte
-      albumBloc.fetchLoca2(userInput); // Passez la variable userInput à la méthode fetchAlbum()
-      print(userInput);
+
+      String userInput = _controller.text;
+      locaBloc.fetchLoca2(userInput);
     }
 
     return Scaffold(
@@ -66,28 +72,52 @@ class _addCityState extends State<addCity> {
 
               onSubmitted: (String value){
                 handleButtonPress();
+
               },
             ),
           ),
-          /*Text('Latitude: ${album?.latitude}, Longitude: ${album?.longitude}'),*/
-          /*ElevatedButton(
-            onPressed: handleButtonPress, // Appeler la méthode handleButtonPress() lorsque le bouton est pressé
-            child: Text('Rechercher'),
-          ),*/
-          StreamBuilder<Loca>(
-          stream: albumBloc.albumStream, // Écoutez le flux de l'album de votre classe BLoC
-          builder: (context, snapshot) {
-          if (snapshot.hasData) {
-          final album = snapshot.data; // Récupérez l'album depuis le snapshot
 
-          // Utilisez les données de l'album dans votre interface utilisateur
-          return Text('Latitude: ${album?.latitude}, Longitude: ${album?.longitude}');
+          StreamBuilder<Loca>(
+          stream: locaBloc.locaStream,
+          builder: (context, snapshot) {
+          //List<City> cities =[];
+          if (snapshot.hasData) {
+          final album = snapshot.data;
+          City city = City(
+            name: _controller.text,
+            latitude: album?.latitude,
+            longitude: album?.longitude,
+
+          );
+          widget.cityList.add(city);
+
+
+          return Column(
+            children: [
+              //Text('Latitude: ${album?.latitude}, Longitude: ${album?.longitude}'),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MeteoPage(cityList: widget.cityList),
+                    ),
+                  );
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.deepPurple),
+                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                ),
+                child: Text("Voir la méteo"),
+              )
+
+            ],
+          );
           } else if (snapshot.hasError) {
-          // Gérez les erreurs lors de la récupération de l'album
-          return Text('Erreur : ${snapshot.error}');
+
+          return Text('');//'Erreur : ${snapshot.error}');
           }
 
-          // Affichez un indicateur de chargement si aucune donnée n'est disponible
           return CircularProgressIndicator();
           },
           ),
@@ -105,17 +135,3 @@ class _addCityState extends State<addCity> {
 
 
 
-/*class addCity extends StatelessWidget {
-  const addCity({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Text("Ajouter une ville", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),)
-        ],
-      ),
-    );
-  }
-}*/

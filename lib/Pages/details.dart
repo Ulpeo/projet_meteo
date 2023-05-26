@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:http/http.dart' as http;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -8,6 +7,7 @@ import 'package:projet_meteo/Pages/components.dart';
 
 import '../api/meteo.dart';
 
+//Page de détail de la meteo avec gestion bloc + fonction pour transformer la date en jour de la semaine
 
 String getDayOfWeek(String dateStr) {
   initializeDateFormatting('fr_FR', null);
@@ -20,22 +20,24 @@ String getDayOfWeek(String dateStr) {
 
 
 class details extends StatefulWidget {
+  final City city; //liste de l'object de la classe City pour récupérer les infos dans toutes les pages
+  details ({required this.city});
   @override
-  _detailsState createState() => _detailsState();
+  _detailsState createState() => _detailsState(); //gestion de l'état
 }
 
 class _detailsState extends State<details> {
-  final meteoBloc = MeteoBloc(); // Créez une instance de votre classe BLoC
+  final meteoBloc = MeteoBloc();
 
   @override
   void initState() {
     super.initState();
-    meteoBloc.fetchMeteo2(); // Appelez la méthode pour récupérer l'album lorsque votre page est initialisée
+    meteoBloc.fetchMeteo2(widget.city.latitude,widget.city.longitude );
   }
 
   @override
   void dispose() {
-    meteoBloc.dispose(); // Disposez de votre classe BLoC lorsque la page est supprimée
+    meteoBloc.dispose();
     super.dispose();
   }
 
@@ -46,11 +48,12 @@ class _detailsState extends State<details> {
     print(hour);
 
     return StreamBuilder<Meteo>(
-      stream: meteoBloc.albumStream, // Écoutez le flux de l'album de votre classe BLoC
+      stream: meteoBloc.albumStream,
       builder: (context, snapshot) {
+
+
         if (snapshot.hasData) {
-          final meteo = snapshot.data; // Récupérez l'album depuis le snapshot
-          // Utilisez les données de l'album dans votre interface utilisateur
+          final meteo = snapshot.data;
           return Scaffold(
             appBar: AppBar(
               elevation: 0,
@@ -59,7 +62,7 @@ class _detailsState extends State<details> {
                 icon: Icon(Icons.arrow_circle_left, color: Colors.black, size: 50),
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              title: Text("Paris, France",
+              title: Text(widget.city.name,
                   style: TextStyle(
                     fontSize:30,
                     fontWeight: FontWeight.bold,
@@ -80,16 +83,16 @@ class _detailsState extends State<details> {
                       children: [
 
                         Text(getDayOfWeek(meteo?.time[0]), style:
-                        TextStyle(color:Colors.black.withOpacity(0.5), fontWeight: FontWeight.bold, fontSize: 20)),
+                        TextStyle(color:Colors.black.withOpacity(0.5), fontWeight: FontWeight.bold, fontSize: 30)),
                         Row(
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text("${meteo?.min[0]}°",style:
-                              TextStyle(color:Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                              TextStyle(color:Colors.black, fontWeight: FontWeight.bold, fontSize: 30)),
                             ),
                             Text("${meteo?.max[0]}°",style:
-                            TextStyle(color:Colors.black.withOpacity(0.5), fontWeight: FontWeight.bold, fontSize: 20))
+                            TextStyle(color:Colors.black.withOpacity(0.5), fontWeight: FontWeight.bold, fontSize: 30))
                           ],
                         )
 
@@ -196,6 +199,7 @@ class _detailsState extends State<details> {
         // Affichez un indicateur de chargement si aucune donnée n'est disponible
         return CircularProgressIndicator();
       },
+
     );
   }
 }
@@ -230,21 +234,35 @@ Widget carteMeteo(temperature, min, max, weatherCode){
                     children: [
                       Text(getMeteo(weatherCode), style:
                       TextStyle(fontSize: 20, color: Colors.grey),),
-                      Text(temperature.toString(), style:
+                      Text(temperature.toString()+"°C", style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 50,),),
                     ],
 
                   ),
                   SizedBox(
-                      height:80, width: 80,
+                      height:73, width: 73,
                       child: SvgPicture.asset(getImage(getMeteo(weatherCode)),  colorFilter: ColorFilter.mode(Colors.deepPurple, BlendMode.srcIn))),
 
                 ],
               ),
-              Text("Aujourd’hui, le temps est ${getMeteo(weatherCode)}. Il y aura une minimale de ${min}° et un maximum de ${max}°.",
-                  style:
-                  TextStyle(fontSize: 20)),
-            ],
+              Text.rich( TextSpan(
+                  text:"Aujourd’hui, le temps est ",
+                  style: TextStyle(fontSize: 20),
+              children:[
+                TextSpan( text: '${getMeteo(weatherCode)}', style:TextStyle(fontSize: 20, color: Colors.deepPurple)),
+                  TextSpan( text: ' . Il y aura une minimale de ', style:TextStyle(fontSize: 20, color: Colors.black)),
+          TextSpan( text: '${min}', style:TextStyle(fontSize: 20, color: Colors.deepPurple),),
+          TextSpan( text: '°C et un maximum de ', style:TextStyle(fontSize: 20, color: Colors.black)),
+          TextSpan( text: '${max}', style:TextStyle(fontSize: 20, color: Colors.deepPurple)),
+          TextSpan( text: '°C.', style:TextStyle(fontSize: 20, color: Colors.black)),
+
+
+
+
+              ]),
+
+              ),
+          ],
           ),
         ),
     ),
@@ -269,7 +287,7 @@ Widget parHeure(meteo, weatherCode){
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text("$i h",style:
-                      TextStyle(color:Colors.black.withOpacity(0.5),fontWeight: FontWeight.bold )),
+                      TextStyle(color:Colors.black.withOpacity(0.5),fontWeight: FontWeight.bold , fontSize: 15)),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -278,7 +296,7 @@ Widget parHeure(meteo, weatherCode){
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text("${meteo?.hourtemp[i]}°",style:
-                      TextStyle(color:Colors.deepPurple,fontWeight: FontWeight.bold )),
+                      TextStyle(color:Colors.deepPurple,fontWeight: FontWeight.bold, fontSize: 15 )),
                     ),
 
 
@@ -300,7 +318,7 @@ Widget parJour(date, min, max, weatherCode){
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(date, style:
-          TextStyle(color:Colors.black, fontWeight: FontWeight.bold, fontSize: 30)),
+          TextStyle(color:Colors.black, fontWeight: FontWeight.bold, fontSize: 25)),
         Row(
           children: [
             Padding(
@@ -309,11 +327,11 @@ Widget parJour(date, min, max, weatherCode){
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(min.toString(), style:
-              TextStyle(color:Colors.black, fontWeight: FontWeight.bold, fontSize: 30)),
+              child: Text(min.toString()+'°C', style:
+              TextStyle(color:Colors.black, fontWeight: FontWeight.bold, fontSize: 25)),
             ),
-            Text(max.toString(), style:
-            TextStyle(color:Colors.black.withOpacity(0.5), fontWeight: FontWeight.bold, fontSize: 30)),
+            Text(max.toString()+'°C', style:
+            TextStyle(color:Colors.black.withOpacity(0.5), fontWeight: FontWeight.bold, fontSize: 25)),
 
           ],
         )

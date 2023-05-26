@@ -1,12 +1,16 @@
-import 'dart:convert';
 
 import "package:flutter/material.dart";
+import 'addCity.dart';
 import "components.dart";
-import 'package:http/http.dart' as http;
+
+//Page qui affiche les cartes raccourci
 
 
 class MeteoPage extends StatelessWidget {
-  const MeteoPage({Key? key}) : super(key: key);
+  final List<City> cityList; //liste de l'object de la classe City pour récupérer les infos dans toutes les pages
+  const MeteoPage({Key? key,required this.cityList}) : super(key: key);
+
+
 
 
   @override
@@ -23,22 +27,25 @@ class MeteoPage extends StatelessWidget {
               color: Colors.black,
             )),
         actions: [
-          IconButton(
-            icon: Icon(Icons.add,
-                color: Colors.black,
-                size: 50),
-            onPressed: (){
-              Navigator.pushNamed(context, '/addCity');
-            },
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 25, 0),
+            child: IconButton(
+              icon: Icon(Icons.add,
+                  color: Colors.black,
+                  size: 50),
+              onPressed: (){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                    builder: (context) => addCity(cityList: cityList),
+                ),);
+              },
+            ),
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: villes.length,
-          itemBuilder: (context, index){
+      body: carte(cityList),
 
-            return carte(index);
-          })
 
 
 

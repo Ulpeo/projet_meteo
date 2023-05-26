@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-Future<Meteo> fetchMeteo() async {
-  var lat = 47.6034323;
-  var lng = -3.0664113;
+Future<Meteo> fetchMeteo(lat, lng) async {
+  /*var lat = 47.6034323;
+  var lng = -3.0664113;*/
   final response = await http
       .get(Uri.parse('https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,precipitation_probability,weathercode,windspeed_10m,winddirection_80m&daily=temperature_2m_max,temperature_2m_min,weathercode&current_weather=true&timezone=auto'));
 
@@ -77,20 +77,19 @@ class Meteo{
 
 
 class MeteoBloc {
-  final _meteoController = StreamController<Meteo>(); // Créez un contrôleur de flux pour émettre l'album
-  Stream<Meteo> get albumStream => _meteoController.stream; // Définissez un getter pour accéder au flux de l'album
-
-  Future<void> fetchMeteo2() async {
+  final _meteoController = StreamController<Meteo>();
+  Stream<Meteo> get albumStream => _meteoController.stream;
+  Future<void> fetchMeteo2(lat, lng) async {
     try {
-      final meteo = await fetchMeteo(); // Appelez votre méthode pour récupérer l'album depuis votre API
-      _meteoController.sink.add(meteo); // Émettez l'album vers le flux
+      final meteo = await fetchMeteo(lat, lng);
+      _meteoController.sink.add(meteo);
     } catch (error) {
-      _meteoController.addError(error); // Gérez les erreurs lors de la récupération de l'album
+      _meteoController.addError(error);
     }
   }
 
   void dispose() {
-    _meteoController.close(); // Fermez le contrôleur de flux lorsqu'il n'est plus utilisé pour éviter les fuites de mémoire
+    _meteoController.close();
   }
 }
 
