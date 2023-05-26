@@ -1,16 +1,9 @@
 # projet_meteo
 
-A new Flutter project.
+Projet Flutter rattrapage Emma Méline TD06.
 
-## Getting Started
+## Fonctionalités
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Page AddCity: permet de rechercher une ville et affiche un bouton "voir la météo" si l'API a réussi à trouver les coordonées de la ville.
+- Page MeteoPage: page avec des cartes correspondant aux villes qui ont étées recherchées (pas de BDD donc se réinitialise à chaque lancement), au clic sur la carte on arrive sur la page de détails.
+- Page de détails: récupère toutes les données de l'API open meteo et affiche les données en temps réels
